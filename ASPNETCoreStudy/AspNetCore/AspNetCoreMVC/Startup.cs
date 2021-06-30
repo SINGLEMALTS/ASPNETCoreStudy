@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AspNetCore
+namespace AspNetCoreMVC
 {
     public class Startup
     {
@@ -24,7 +24,7 @@ namespace AspNetCore
         // 각종 서비스 추가 (DI)
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
+            services.AddControllersWithViews();
             // DI 서비스란? SRP (Single Responsibility Principle) : 1서비스에서 1기능
         }
 
@@ -39,11 +39,10 @@ namespace AspNetCore
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
 
             // CSS, JS, 이미지등 요청 받을 때 처리
@@ -56,7 +55,9 @@ namespace AspNetCore
             app.UseEndpoints(endpoints =>
             {
                 // 라우팅 패턴 설정
-                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
