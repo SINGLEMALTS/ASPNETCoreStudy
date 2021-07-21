@@ -36,6 +36,20 @@ namespace AspNetCoreMVC
         // 3. 미들웨어 적용
         // 4. Controller로 전달
         // 5. Controller에서 처리하고 View로 전달(return View())
+
+        // HTTP Request Pipeline ( NodeJS 와 유사 )
+        // 미들웨어 : HTTP request / responese 를 처리하는 중간 부품이라고 생각할 수 있음
+
+        // [Request]
+        // [파이프라인] <- 여기선 Configure 메서드 내부의 일련의 순서를 의미
+        // [마지막 MVC Endpoint]
+        // [파이프라인]
+        // [Response]
+        // 위의 과정은 위에서 아래로, 아래에서 위로 계속 반복
+
+        // 미들웨어에서 처리한 결과물을 다른 미들웨어로 넘길 수 있음 ( 마지막 endpoint  전에 파이프라인에서 파이프라인으로 이동가능)
+        // -> 순서가 중요할 수 있음
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
