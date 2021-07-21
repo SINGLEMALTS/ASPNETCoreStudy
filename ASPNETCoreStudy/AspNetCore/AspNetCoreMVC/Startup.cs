@@ -31,6 +31,11 @@ namespace AspNetCoreMVC
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         // HTTP Request Pipeline
         // 어떤 HTTP 요청이 왔을 때 , 앱이 어떻게 응답하는지 일련의 과정
+        // 1. IIS, Apache 등에 HTTP 요청
+        // 2. ASP.NET Core 서버 (kestrel) 전달
+        // 3. 미들웨어 적용
+        // 4. Controller로 전달
+        // 5. Controller에서 처리하고 View로 전달(return View())
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
