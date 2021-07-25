@@ -51,14 +51,21 @@ namespace AspNetCoreMVC.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            // var url = Url.Action("Privacy", "Home");
+            var url = Url.RouteUrl("test", new { test = 1234 });
+            // return View();
+            // return Redirect(url);
+            return RedirectToAction("Privacy");
         }
 
         public IActionResult Privacy()
         {
+            // 데이터 넘기는 테스트
+            ViewData["Message"] = "DataFromPrivacy";
             return View();
         }
 
+        // [Route("Hello")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
