@@ -1,0 +1,35 @@
+﻿
+
+
+<h1>Hello Razor Template</h1>
+@* 주석 *@
+@* C# 코드가 시작한다는 의미로 @를 이용 *@
+@* C# 코드는 ' '(공백)에 의해 끝난다 .공백을 넣을거면 괄호로 감싸야함 *@
+@* C# 코드 영역(code block)이라는 의미로 @{} *@
+
+@* ViewModel을 사용하려면 넘어온게 어떤 형식인지 알려줘야함 *@
+@* 그 다음부터는 Model 프로퍼티를 이용해서 접근 가능 *@
+@model TestViewModel
+
+@section Scripts{
+    <h1>I am Section</h1>
+}
+
+<h2>@DateTime.Now thisisNotC#</h2>
+<h3>@(1 + 1)</h3>
+
+@{
+    List<string> names = new List<string> { "Fast" };
+}
+
+@if (Model.Names.Count < 5)
+{
+    <h1>데이터가 많지않네 ㅎㅎ</h1>
+}
+
+<ul>
+    @for (int i = 0; i < Model.Names.Count; i++)
+    {
+        <li>@Model.Names[i]</li>
+    }
+</ul>

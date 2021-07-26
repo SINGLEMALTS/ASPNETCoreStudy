@@ -111,6 +111,54 @@ namespace AspNetCoreMVC.Controllers
      * 
      */
 
+    /* [View]
+     * Razor View Page(.cshtml)
+     * 기본적으로 HTML과 유사한 느낌.
+     * HTML은 동적 처리가 애매하다.
+     * - 동적이라 함은 if else과 분기문 처리라거나,
+     * - 특정 리스트 개수에 따라서 <ul><li> 갯수를 변화시키기가 어려움
+     * 따라서 C#을 이용해서 생명을 불어넣겠다!
+     * 
+     *HTML : 고정 부분 담당 (실제 클라에 응답을 줄 HTML)
+     *C# : 동적으로 변화하는 부분을 담당
+     *Razor Template을 우리가 만들어주고,
+     *이를 Razor 템플릿 엔진이 템플릿을 분석해서 최종 결과물을 동적을 생성
+     *
+     *일반적으로 View에 데이터를 건내주는 역할은 Action으로.
+     *데이터를 전달하는 방법
+     *1) ViewModel (Best)
+     *-클래스로 만들어서 넘겨주는 방식
+     *2) ViewData
+     *-Dictionary<string,object> key/value 넘기는 방식
+     *3) ViewBag
+     *-Dictionary가 아니라 dynamic 문법 사용
+     *
+     *ViewModel 그냥 클래스일뿐.
+     *간단한 데이터를 넘긴다면 ViewData도 괜찮.
+     *실제로 Error 페이지를 살펴보자
+     *
+     *Layout, PartialView, _ViewStart
+     *보통 웹사이트에서는 공통적으로 등장하는 UI가많다.(ex. Header, footer...)
+     *동일한 CSS, Javascript 사용할 가능성도 높음
+     *공통적인 부분만 따로 빼서 관리하는 layout
+     *
+     *Layout도 그냥 Razor 템플릿과 크게 다르지 않고
+     *다만 무조건 @RenderBody()를 포함해야 한다
+     *ChildView가 어디에 위치하는지를 지정하는 것
+     *실제 ChildView의 HTML이 복붙 된다고 보면 됨.
+     *
+     *그런데 1개의 위치가 아니라, 이리저리 Child를 뿌려주고 싶다면?
+     *RenderSection을 이용해 다른 이름으로 넣어준다.
+     *
+     *_ViewStart, _ViewImports 라는 정체는? -> 그냥 공통적인 부분을 넣어주는 곳
+     *모든 View 마다 어떤 Layout을 적용할지 일일히 코드를 넣어주긴 귀찮다..
+     *@using같은건 매번쓰기 귀찮으니까
+     *_ViewStart, _ViewImports만들어주면 해당 폴더내 모든 View에 일괄 적용
+     *
+     *참고) PartialView라고 반복적으로 등장하는 View
+     *재사용할 수 있게 만들 수 있는데, 이름 앞에 _를 붙여야함.
+     *_이 붙으면, _ViewStart가 적용되지않음
+     */
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -120,11 +168,23 @@ namespace AspNetCoreMVC.Controllers
             _logger = logger;
         }
 
-        public IActionResult Test(int id, string value)
+        // 기본적으로 Views/Controller/Action.csthml을 템플릿으로 사용
+        public IActionResult Test()
         {
-            return null;
-        }
+            //return View(); // View-> new ViewResult (확장메서드) 이름으로 cshtml파일 매칭
+            //return View("Privacy"); // 상대경로
+            //return View("Views/Shared/Error.cshtml"); // 절대경로
 
+            TestViewModel testViewModel = new TestViewModel()
+            {
+                Names = new List<string>()
+                {
+                    "1","2","3"
+                }
+            };
+            return View(testViewModel);
+        }
+/*
         public IActionResult Test2(TestModels testModels)
         {
             if (!ModelState.IsValid)
@@ -146,7 +206,7 @@ namespace AspNetCoreMVC.Controllers
         {
             return null;
         }
-
+*/
         public IActionResult Index()
         {
             // var url = Url.Action("Privacy", "Home");

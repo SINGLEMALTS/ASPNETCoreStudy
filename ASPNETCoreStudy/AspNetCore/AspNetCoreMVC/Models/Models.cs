@@ -12,14 +12,19 @@ namespace AspNetCoreMVC.Models
     //    public string Name { get; set; }
     //}
 
-    public class TestModels
-    {
-        // 검증을 위한 Annotation 추가
-        [Required]
-        public int id { get; set; }
+    //public class TestModels
+    //{
+    //    // 검증을 위한 Annotation 추가
+    //    [Required]
+    //    public int id { get; set; }
 
-        [Required]
-        [StringLength(20)]
-        public string Name { get; set; }
+    //    [Required]
+    //    [StringLength(20)]
+    //    public string Name { get; set; }
+    //}
+
+    public class TestViewModel
+    {
+        public List<string> Names { get; set; }
     }
 }
