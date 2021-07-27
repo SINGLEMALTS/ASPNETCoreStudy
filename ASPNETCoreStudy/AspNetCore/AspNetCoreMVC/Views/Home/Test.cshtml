@@ -1,6 +1,5 @@
 ﻿
 
-
 <h1>Hello Razor Template</h1>
 @* 주석 *@
 @* C# 코드가 시작한다는 의미로 @를 이용 *@
@@ -22,14 +21,47 @@
     List<string> names = new List<string> { "Fast" };
 }
 
-@if (Model.Names.Count < 5)
-{
-    <h1>데이터가 많지않네 ㅎㅎ</h1>
+@*@if (Model.Names.Count < 5)
+    {
+        <h1>데이터가 많지않네 ㅎㅎ</h1>
+    }*@
+
+@*<ul>
+        @for (int i = 0; i < Model.Names.Count; i++)
+        {
+            <li>@Model.Names[i]</li>
+        }
+    </ul>*@
+
+@{
+    ViewData["Title"] = "Test Buy Item";
+
 }
 
-<ul>
-    @for (int i = 0; i < Model.Names.Count; i++)
-    {
-        <li>@Model.Names[i]</li>
-    }
-</ul>
+@* PartialView 사용 *@
+@section Scripts {
+@Html.Partial("ValidationScriptsPartial");'
+}
+<h1> Hello Razor Template</h1>
+
+@*input의 asp-for는 내용 출력 뿐 아니라, input의 type도 결정하는데 도움 준다. *@
+@* number,tesxt,hidden,password,tel, email,url,date... *@
+@* Property가 어떤 형식인지,[EmailAddress] [Url]과 같은 Attribute가 붙었는지 등  *@
+@* asp-route- ~ 를 사용해 ~를 넘겨줌 *@
+@*  *@
+<form asp-action="BuyItem" asp-controller="Home" asp-route-id="@Model.Id" asp-route-count="@Model.Count">
+    <div class="form-group">
+        @* Tag helper사용:asp-for *@
+        <label asp-for="Id"></label>
+        <input class="form-control" asp-for="Id" />
+        <span asp-validation-for="Id"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Count"></label>
+        <input class="form-control" asp-for="Count" />
+        <span asp-validation-for="Count"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    @* 걸러진 모든 에러메시지를 다 보여줌 *@
+    <div asp-validation-summary="All"></div>
+</form>

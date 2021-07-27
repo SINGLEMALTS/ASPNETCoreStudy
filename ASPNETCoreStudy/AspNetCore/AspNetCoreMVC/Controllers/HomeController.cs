@@ -159,6 +159,15 @@ namespace AspNetCoreMVC.Controllers
      *재사용할 수 있게 만들 수 있는데, 이름 앞에 _를 붙여야함.
      *_이 붙으면, _ViewStart가 적용되지않음
      */
+
+    /* [TagHelper] 일종의 HTML Helper
+     * 웹페이지에서 거꾸로 유저가 Submit을 한다거나 하면 받아서 로직이 이어서 실행이 되어야함
+     * 클라에서 어떤 Controller/ Action / 데이터를 보낼 것인가?
+     * 
+     * HTML로 순수 다 작성해도 되지만
+     * Tag-Helper를 이용하면 쉽게 처리가능
+     */
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -168,8 +177,13 @@ namespace AspNetCoreMVC.Controllers
             _logger = logger;
         }
 
-        // 기본적으로 Views/Controller/Action.csthml을 템플릿으로 사용
-        public IActionResult Test()
+        public IActionResult BuyItem()
+        {
+            return View();
+        }
+
+    // 기본적으로 Views/Controller/Action.csthml을 템플릿으로 사용
+    public IActionResult Test()
         {
             //return View(); // View-> new ViewResult (확장메서드) 이름으로 cshtml파일 매칭
             //return View("Privacy"); // 상대경로
@@ -177,13 +191,16 @@ namespace AspNetCoreMVC.Controllers
 
             TestViewModel testViewModel = new TestViewModel()
             {
-                Names = new List<string>()
-                {
-                    "1","2","3"
-                }
+                //Names = new List<string>()
+                //{
+                //    "1","2","3"
+                //}
+                Id = 1005,
+                Count=2
             };
             return View(testViewModel);
         }
+      
 /*
         public IActionResult Test2(TestModels testModels)
         {
