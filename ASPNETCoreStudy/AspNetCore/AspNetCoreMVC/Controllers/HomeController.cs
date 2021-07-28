@@ -168,6 +168,38 @@ namespace AspNetCoreMVC.Controllers
      * Tag-Helper를 이용하면 쉽게 처리가능
      */
 
+    /*[WebAPI]
+     * MVC의 View가 HTML을 반환하지 않고, JSON/XML 데이터를 반환하면
+     * 나머지 Routing, Model Binding, Validation, Response 등 동일함
+     * 
+     * IActionResult 대신 그냥 List<string> 데이터를 반환하면 그게 WebAPI
+     * 이렇게 바로 Data를 반환하면 , ApiModel이 적용되어
+     * Asp.NET Core에서 default: JSON으로 만들어서 보냄.
+     * 
+     * ASP.NET 이전 버전에서는 MVC와 WebAPI가 분리.
+     * ASP.NET Core이후는 동일한 프레임워크 사용
+     * 몇몇 설정과 반환값만 달라짐.
+     * 
+     * 1) request
+     * 2) routing
+     * 3) Model Binding + validation
+     * 4) Action (<-> Service ApplicationModel)
+     * 5) ViewModel vs ApiModel // 여기만 다름. ViewModel 대신 ApiModel
+     * - View(Razor Template) vs Formatter ( 어떤 포맷으로? json)
+      * 6) responseㅕ
+      * 
+      * WebAPI 프로젝트를 기본적으로 만들면, 기본 설정값들이 다르긴한데
+      * 어디까지나 옵션. MVC 방식 설정 WebAPI를 운영해도 무방.
+      * 일반적으로 WebAPI에서는 Convention방식의 Routing(Controller/Action)를 사용하지 않음
+      * Why? REST 서버를 생각해보면
+      * URL요청 자체가어떤 기능을 하는지 , 이름에서 보다 명확하게 드러나야 좋다.(api/ranking/find)
+      * Attribute Routing
+      * 
+      * 특정 HTTP verb (POST,GET등)에 대해서만 요청을 받고 싶다면?
+      * [HttpGet] [HttpPost] 사용
+      * [HttpPost("주소")] = [HttpPost] + [Route("주소")]
+     */
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -182,48 +214,58 @@ namespace AspNetCoreMVC.Controllers
             return View();
         }
 
-    // 기본적으로 Views/Controller/Action.csthml을 템플릿으로 사용
-    public IActionResult Test()
-        {
-            //return View(); // View-> new ViewResult (확장메서드) 이름으로 cshtml파일 매칭
-            //return View("Privacy"); // 상대경로
-            //return View("Views/Shared/Error.cshtml"); // 절대경로
+        //// 기본적으로 Views/Controller/Action.csthml을 템플릿으로 사용
+        //public IActionResult Test()
+        //    {
+        //        //return View(); // View-> new ViewResult (확장메서드) 이름으로 cshtml파일 매칭
+        //        //return View("Privacy"); // 상대경로
+        //        //return View("Views/Shared/Error.cshtml"); // 절대경로
 
-            TestViewModel testViewModel = new TestViewModel()
+        //        TestViewModel testViewModel = new TestViewModel()
+        //        {
+        //            //Names = new List<string>()
+        //            //{
+        //            //    "1","2","3"
+        //            //}
+        //            Id = 1005,
+        //            Count=2
+        //        };
+        //        return View(testViewModel);
+        //    }
+
+        public IEnumerable<string> Test()
+        {
+            List<string> names = new List<string>()
             {
-                //Names = new List<string>()
-                //{
-                //    "1","2","3"
-                //}
-                Id = 1005,
-                Count=2
+                "Faker","Deft","Dopa"
             };
-            return View(testViewModel);
-        }
-      
-/*
-        public IActionResult Test2(TestModels testModels)
-        {
-            if (!ModelState.IsValid)
-                return RedirectToAction("Error");
-            return null;
+
+            return names;
         }
 
-        // 1) names[0]=Faker&names[1]=Deft
-        // 2) [0]=Faker&[1]=Deft
-        // 3) names=Faker&names=Deft
-        public IActionResult Test3(List<string> names)
-        {
+        /*
+                public IActionResult Test2(TestModels testModels)
+                {
+                    if (!ModelState.IsValid)
+                        return RedirectToAction("Error");
+                    return null;
+                }
 
-            return null;
-        }
+                // 1) names[0]=Faker&names[1]=Deft
+                // 2) [0]=Faker&[1]=Deft
+                // 3) names=Faker&names=Deft
+                public IActionResult Test3(List<string> names)
+                {
+
+                    return null;
+                }
 
 
-        public IActionResult Test4(int id, [FromHeader] string value)
-        {
-            return null;
-        }
-*/
+                public IActionResult Test4(int id, [FromHeader] string value)
+                {
+                    return null;
+                }
+        */
         public IActionResult Index()
         {
             // var url = Url.Action("Privacy", "Home");
