@@ -28,6 +28,9 @@ namespace AspNetCoreMVC
                 {
                     // 2. Startup 클래스 지정
                     webBuilder.UseStartup<Startup>();
+
+                    //// DI의 부품들 생명주기를 알아서 잡아주도록 설정
+                    //webBuilder.UseDefaultServiceProvider(opt => opt.ValidateScopes = true);
                 });
     }
 }

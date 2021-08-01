@@ -200,79 +200,192 @@ namespace AspNetCoreMVC.Controllers
       * [HttpPost("주소")] = [HttpPost] + [Route("주소")]
      */
 
+    /*[Dependency Injection(DI 종속성 주입)]
+     * 디자인 패턴에서 코드간 종속성을 줄이는 것을 중요하게 생각(loosely coupled)
+     * HomeController 안에 FileLogger와 FileLoggerSettings가 들어가게 되므로 FileLogger와 FileLoggerSettings를 수정하게되면
+     * 다른 것에도 영향을 미침. -> 종속성이 생김.->DI필요성
+     * 
+     * 객체 인스턴스를 어디선가 관리를하다가 필요하면 꽂아주는 방식이라고 볼 수 있음(주로 생성자에 꽂아줌)
+     * 생성자에서 new를해서 직접만들어줘야하나? -> No
+     * 인터페이스 A에 대해서 ~ B라는 구현을 사용해. 그러면 생성자에 이를 연결해주는 것은 알아서 처리됨.
+     * 
+     * 1) Request
+     * 2) Routing
+     * 3) Controller Activator라는 애가 DI Container 한테 Controller 생성 + 알맞는 Dependency 연결 위탁
+     * 4) DI Container 임무실시
+     * 5) Controller가 생성 끝
+     * 
+     * 만약 3번에서 요청한 Dependency를 못찾으면 -> Error! (=ConfigureServices에 서비스 등록이 없으면 찾지못해서 에러)
+     * 서비스 등록 방법 3가지
+     * - Service Type(인터페이스 or 클래스 가능)
+     * - Implementation Type(클래스)
+     * - LifeTime 생명주기 설정 (Transient, Scoped, Singleton 중 하나)
+     * AddTransient, AddScoped, AddSingleton 라이프타임 설정에 맞게 해줘야됨)
+     * 
+     * 원한다면 동일한 인터페이스에 대해 다수의 서비스 등록 가능
+     * IEnumerable<IBaseLogger> 
+     * 
+     * 보통은 생성자에서 DI하지만, Action에도 DI를 [FromServices]를 사용해서 붙일수 있음
+     * 
+     * Razor View Template에서도 서비스가 필요하다면?
+     * 이경우 생성자를 사용할 수 없으니, @inject 문법을 사용.
+     * 
+     * !중요
+     * LifeTime
+     * DI Container에 특정 서비스를 달라고 요청하면 
+     * 1) 만들어서 반환하거나
+     * 2) 있는 걸 반환하거나
+     * 즉, 서비스 instance를 재사용할지 말지를 결정
+     * 
+     *Transient (항상 DI필요할때마다 새로운 서비스 instnace를 만든다. 매번 new)
+     *Scoped (동일한 요청 내에서 같음. DbContext, Authentication) << 가장 일반적
+     *Singleton (항상 동일한 인스턴스를 사용)
+     *- 웹에서의 싱글톤은 Thread-safe 해야 함.
+     * 
+     * 어떤 서비스에서 DI 부품을 사용한다면, 부품들의 수명주기는 최소한 서비스의 수명주기보다는 같거나 길어야함.
+     * ex) logger는 Singleton인데 logger에 사용되는 settings가 인스턴스면;
+     * 개발환경에서는 이를 검사하도록 체크 가능
+     * 
+     */
+
+    #region
+    public interface IBaseLogger
+    {
+        public void Log(string log);
+    }
+
+    public class DbLogger : IBaseLogger
+    {
+        public DbLogger()
+        {
+        }
+        public void Log(string log)
+        {
+            Console.WriteLine("log");
+        }
+
+    }
+
+    public class FileLogSettings
+    {
+        string _filename;
+        public FileLogSettings(string filename)
+        {
+            _filename = filename;
+        }
+    }
+
+    public class FileLogger : IBaseLogger
+    {
+        FileLogSettings _settings;
+        public FileLogger(FileLogSettings settings)
+        {
+            _settings = settings;
+        }
+
+        public void Log(string log)
+        {
+            Console.WriteLine("log");
+        }
+    }
+    #endregion
+
+
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        //private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        //public HomeController(ILogger<HomeController> logger)
+        //{
+        //    _logger = logger;
+        //}
+
+        //public IActionResult BuyItem()
+        //{
+        //    return View();
+        //}
+
+        ////// 기본적으로 Views/Controller/Action.csthml을 템플릿으로 사용
+        ////public IActionResult Test()
+        ////    {
+        ////        //return View(); // View-> new ViewResult (확장메서드) 이름으로 cshtml파일 매칭
+        ////        //return View("Privacy"); // 상대경로
+        ////        //return View("Views/Shared/Error.cshtml"); // 절대경로
+
+        ////        TestViewModel testViewModel = new TestViewModel()
+        ////        {
+        ////            //Names = new List<string>()
+        ////            //{
+        ////            //    "1","2","3"
+        ////            //}
+        ////            Id = 1005,
+        ////            Count=2
+        ////        };
+        ////        return View(testViewModel);
+        ////    }
+
+        //public IEnumerable<string> Test()
+        //{
+        //    List<string> names = new List<string>()
+        //    {
+        //        "Faker","Deft","Dopa"
+        //    };
+
+        //    return names;
+        //}
+
+        ///*
+        //        public IActionResult Test2(TestModels testModels)
+        //        {
+        //            if (!ModelState.IsValid)
+        //                return RedirectToAction("Error");
+        //            return null;
+        //        }
+
+        //        // 1) names[0]=Faker&names[1]=Deft
+        //        // 2) [0]=Faker&[1]=Deft
+        //        // 3) names=Faker&names=Deft
+        //        public IActionResult Test3(List<string> names)
+        //        {
+
+        //            return null;
+        //        }
+
+
+        //        public IActionResult Test4(int id, [FromHeader] string value)
+        //        {
+        //            return null;
+        //        }
+        //*/
+
+
+        IBaseLogger _logger;
+        //// 로거 여러개를 쓰고자 한다면, 서비스에서 여려개를 등록하고 여기서도 IEnumerable을 사용
+        //IEnumerable<IBaseLogger> _logger;
+
+        public HomeController(IBaseLogger logger)
         {
             _logger = logger;
         }
 
-        public IActionResult BuyItem()
+        [Route("Test")]
+        public IActionResult Test([FromServices] IBaseLogger logger)
         {
-            return View();
+            return Ok();
         }
 
-        //// 기본적으로 Views/Controller/Action.csthml을 템플릿으로 사용
-        //public IActionResult Test()
-        //    {
-        //        //return View(); // View-> new ViewResult (확장메서드) 이름으로 cshtml파일 매칭
-        //        //return View("Privacy"); // 상대경로
-        //        //return View("Views/Shared/Error.cshtml"); // 절대경로
-
-        //        TestViewModel testViewModel = new TestViewModel()
-        //        {
-        //            //Names = new List<string>()
-        //            //{
-        //            //    "1","2","3"
-        //            //}
-        //            Id = 1005,
-        //            Count=2
-        //        };
-        //        return View(testViewModel);
-        //    }
-
-        public IEnumerable<string> Test()
-        {
-            List<string> names = new List<string>()
-            {
-                "Faker","Deft","Dopa"
-            };
-
-            return names;
-        }
-
-        /*
-                public IActionResult Test2(TestModels testModels)
-                {
-                    if (!ModelState.IsValid)
-                        return RedirectToAction("Error");
-                    return null;
-                }
-
-                // 1) names[0]=Faker&names[1]=Deft
-                // 2) [0]=Faker&[1]=Deft
-                // 3) names=Faker&names=Deft
-                public IActionResult Test3(List<string> names)
-                {
-
-                    return null;
-                }
-
-
-                public IActionResult Test4(int id, [FromHeader] string value)
-                {
-                    return null;
-                }
-        */
         public IActionResult Index()
         {
-            // var url = Url.Action("Privacy", "Home");
-            var url = Url.RouteUrl("test", new { test = 1234 });
-            // return View();
-            // return Redirect(url);
-            return RedirectToAction("Privacy");
+            //// var url = Url.Action("Privacy", "Home");
+            //var url = Url.RouteUrl("test", new { test = 1234 });
+            //// return View();
+            //// return Redirect(url);
+            //return RedirectToAction("Privacy");
+
+            FileLogger logger = new FileLogger(new FileLogSettings("log.txt"));
+            logger.Log("Log Test");
+
+            return Ok();
         }
 
         public IActionResult Privacy()

@@ -1,3 +1,4 @@
+using AspNetCoreMVC.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -27,30 +28,39 @@ namespace AspNetCoreMVC
         {
             services.AddControllersWithViews();
             // DI 서비스란? SRP (Single Responsibility Principle) : 1서비스에서 1기능
+
+            services.AddSingleton<IBaseLogger, FileLogger>(); // IBaseLogger라는 Dependency를 생성해줘, FileLogger클래스를 사용해서 
+            services.AddSingleton(new FileLogSettings("log.txt")); // Filelogger에 필요한 FileLogSettings도 필요함
+            //// 각각 다른 Settings가 필요한 경우 실시간으로 람다식으로 호출해서 만들게 할 수도
+            //services.AddSingleton(sp=>new FileLogSettings("log.txt"));
+
+            //여러개 사용시 여러개를 서비스 등록
+            // services.AddSingleton<IBaseLogger, DbLogger>();
+
         }
+        /*
+        This method gets called by the runtime.Use this method to configure the HTTP request pipeline.
+        HTTP Request Pipeline
+        어떤 HTTP 요청이 왔을 때, 앱이 어떻게 응답하는지 일련의 과정
+         1. IIS, Apache 등에 HTTP 요청
+         2. ASP.NET Core 서버 (kestrel) 전달
+         3. 미들웨어 적용
+         4. Controller로 전달
+         5. Controller에서 처리하고 View로 전달(return View())
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        // HTTP Request Pipeline
-        // 어떤 HTTP 요청이 왔을 때 , 앱이 어떻게 응답하는지 일련의 과정
-        // 1. IIS, Apache 등에 HTTP 요청
-        // 2. ASP.NET Core 서버 (kestrel) 전달
-        // 3. 미들웨어 적용
-        // 4. Controller로 전달
-        // 5. Controller에서 처리하고 View로 전달(return View())
+         HTTP Request Pipeline (NodeJS 와 유사 )
+         미들웨어 : HTTP request / responese 를 처리하는 중간 부품이라고 생각할 수 있음
 
-        // HTTP Request Pipeline ( NodeJS 와 유사 )
-        // 미들웨어 : HTTP request / responese 를 처리하는 중간 부품이라고 생각할 수 있음
+         [Request]
+         [파이프라인] <- 여기선 Configure 메서드 내부의 일련의 순서를 의미
+[마지막 MVC Endpoint]
+[파이프라인]
+[Response]
+위의 과정은 위에서 아래로, 아래에서 위로 계속 반복
 
-        // [Request]
-        // [파이프라인] <- 여기선 Configure 메서드 내부의 일련의 순서를 의미
-        // [마지막 MVC Endpoint]
-        // [파이프라인]
-        // [Response]
-        // 위의 과정은 위에서 아래로, 아래에서 위로 계속 반복
-
-        // 미들웨어에서 처리한 결과물을 다른 미들웨어로 넘길 수 있음 ( 마지막 endpoint  전에 파이프라인에서 파이프라인으로 이동가능)
-        // -> 순서가 중요할 수 있음
-
+         미들웨어에서 처리한 결과물을 다른 미들웨어로 넘길 수 있음(마지막 endpoint  전에 파이프라인에서 파이프라인으로 이동가능)
+         -> 순서가 중요할 수 있음
+        */
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
