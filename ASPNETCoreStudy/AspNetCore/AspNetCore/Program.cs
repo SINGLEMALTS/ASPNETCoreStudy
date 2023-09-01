@@ -12,7 +12,7 @@ namespace AspNetCore
     public class Program
     {
         // 콘솔앱과 동일한 static void Main
-        // Program은 거시적인 설정 Http 서버, IIS 사용 여부 등 거의 바뀌지 않음
+        // Program은 거시적인 설정 Http 서버, IIS 사용 여부 등 설정 후 거의 바뀌지 않음
         // Startup은 세부적인 설정( 미들웨어 설정, Dependency injection 등, 필요에 따라 추가 또는 삭제)
         public static void Main(string[] args)
         {

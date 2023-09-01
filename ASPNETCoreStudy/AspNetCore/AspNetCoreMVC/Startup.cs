@@ -42,34 +42,47 @@ namespace AspNetCoreMVC
         This method gets called by the runtime.Use this method to configure the HTTP request pipeline.
         HTTP Request Pipeline
         어떤 HTTP 요청이 왔을 때, 앱이 어떻게 응답하는지 일련의 과정
-         1. IIS, Apache 등에 HTTP 요청
-         2. ASP.NET Core 서버 (kestrel) 전달
-         3. 미들웨어 적용
-         4. Controller로 전달
-         5. Controller에서 처리하고 View로 전달(return View())
+        1. IIS, Apache 등에 HTTP 요청
+        2. ASP.NET Core 서버 (kestrel) 전달
+        3. 미들웨어 적용
+        4. Controller로 전달
+        4-1. 컨트롤러내에서 DB작업이든 수행 후
+        5. Controller에서 처리하고 View로 전달(return View())
 
-         HTTP Request Pipeline (NodeJS 와 유사 )
-         미들웨어 : HTTP request / responese 를 처리하는 중간 부품이라고 생각할 수 있음
+        HTTP Request Pipeline (NodeJS 와 유사 )
+        미들웨어 : HTTP request / responese 를 처리하는 중간 부품이라고 생각할 수 있음
 
-         [Request]
-         [파이프라인] <- 여기선 Configure 메서드 내부의 일련의 순서를 의미
-[마지막 MVC Endpoint]
-[파이프라인]
-[Response]
-위의 과정은 위에서 아래로, 아래에서 위로 계속 반복
+        [Request]
+            [파이프라인] <- 여기선 Configure 메서드 내부의 일련의 순서를 의미
+                [마지막 MVC Endpoint]
+            [파이프라인]
+        [Response]
+        
+        위의 과정은 위에서 아래로, 아래에서 위로 계속 반복
 
-         미들웨어에서 처리한 결과물을 다른 미들웨어로 넘길 수 있음(마지막 endpoint  전에 파이프라인에서 파이프라인으로 이동가능)
-         -> 순서가 중요할 수 있음
+        미들웨어에서 처리한 결과물을 다른 미들웨어로 넘길 수 있음(마지막 endpoint  전에 파이프라인에서 파이프라인으로도 이동가능)
+        -> 순서가 중요할 수 있음
+
+        미들 웨어를 사용하는 이유 (컨트롤러에서 처리하지 않는 이유)
+        -> 모든 요청마다 로깅을 해야한다면?
+        -> 반복적인 코드를 피하기 위해 일괄적인 처리
+
+
+        
         */
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //app.UseWelcomePage();
+            //app.UseStatusCodePages();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             else
             {
+                // /View/Shared/Error 페이지로 연결
                 app.UseExceptionHandler("/Home/Error");
+
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
@@ -79,8 +92,13 @@ namespace AspNetCoreMVC
             app.UseStaticFiles();
 
             app.UseRouting();
+            
+            // 인증 순서 중요
+            // https://learn.microsoft.com/ko-kr/aspnet/core/migration/22-to-30?view=aspnetcore-3.0&tabs=visual-studio#migrate-startupconfigure
+            // 인증/권한부여 -> 라우팅 -> cors -> endpoint 순서로 미들웨어
+            //app.UseAuthentication(); // 인증
 
-            app.UseAuthorization();
+            app.UseAuthorization(); // 인가
 
             // 라우팅 : 길잡이
             // HTTP request <-> 담당 handler 매핑하는 것
